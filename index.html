@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ur" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#0F2130">
+<meta name="description" content="KHAN PUMP - Fuel Tank Dip to Litres Calculator">
+<title>KHAN PUMP | Dip Calculator</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===== Header / Branding ===== -->
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2.5c-2.8 3.6-6 8-6 11.3a6 6 0 0 0 12 0c0-3.3-3.2-7.7-6-11.3Z"/>
+      </svg>
+      <div class="brand-text">
+        <h1>KHAN <span>PUMP</span></h1>
+        <p>Fuel Tank Dip Calculator</p>
+      </div>
+    </div>
+    <button id="themeToggle" class="icon-btn" title="Switch Light/Dark" aria-label="Toggle theme">
+      <svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><g stroke-linecap="round"><line x1="12" y1="1.5" x2="12" y2="4.2"/><line x1="12" y1="19.8" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="4.2" y2="12"/><line x1="19.8" y1="12" x2="22.5" y2="12"/><line x1="4.5" y1="4.5" x2="6.4" y2="6.4"/><line x1="17.6" y1="17.6" x2="19.5" y2="19.5"/><line x1="4.5" y1="19.5" x2="6.4" y2="17.6"/><line x1="17.6" y1="6.4" x2="19.5" y2="4.5"/></g></svg>
+      <svg class="i-moon" viewBox="0 0 24 24"><path d="M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a7 7 0 0 0 10.7 10.7Z"/></svg>
+    </button>
+  </header>
+
+  <!-- ===== Tabs ===== -->
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-tab="calc" role="tab" aria-selected="true">Calculator</button>
+    <button class="tab" data-tab="table" role="tab" aria-selected="false">Calibration Table</button>
+    <button class="tab" data-tab="history" role="tab" aria-selected="false">History</button>
+  </nav>
+
+  <main>
+
+    <!-- ===== Calculator Panel ===== -->
+    <section id="panel-calc" class="panel active">
+
+      <div class="card input-card">
+        <label for="dipInput">Dip Reading (mm)</label>
+        <div class="input-row">
+          <input type="number" id="dipInput" inputmode="decimal" placeholder="e.g. 845" min="0" max="2360" step="1" autocomplete="off">
+          <button id="clearBtn" class="ghost-btn" title="Clear">✕</button>
+        </div>
+        <input type="range" id="dipSlider" min="0" max="2360" step="1" value="0">
+        <div class="range-labels"><span>0 mm</span><span id="maxDipLabel">2360 mm</span></div>
+      </div>
+
+      <div class="card result-card">
+        <div class="gauge-wrap">
+          <div class="tank">
+            <div class="tank-liquid" id="tankLiquid" style="height:0%">
+              <div class="wave"></div>
+            </div>
+            <div class="tank-scale">
+              <span>F</span><span>¾</span><span>½</span><span>¼</span><span>E</span>
+            </div>
+          </div>
+          <div class="readout">
+            <div class="readout-value" id="litersValue">0</div>
+            <div class="readout-unit">Litres</div>
+            <div class="readout-percent" id="percentValue">0% Full</div>
+          </div>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat">
+            <span class="stat-label">Dip</span>
+            <span class="stat-value" id="statDip">0 mm</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Tank Capacity</span>
+            <span class="stat-value" id="statCapacity">23,462 L</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Remaining Space</span>
+            <span class="stat-value" id="statRemaining">23,462 L</span>
+          </div>
+        </div>
+
+        <button id="saveBtn" class="primary-btn">💾 Save to History</button>
+      </div>
+    </section>
+
+    <!-- ===== Calibration Table Panel ===== -->
+    <section id="panel-table" class="panel">
+      <div class="card">
+        <div class="table-toolbar">
+          <p class="hint">Dip (cm) in column <b>A</b>, millimetres 0–9 in columns <b>B:K</b>. Values = litres, auto-calculated by interpolation from KHAN PUMP calibration data.</p>
+          <input type="search" id="tableSearch" placeholder="Search cm row… e.g. 84" inputmode="numeric">
+        </div>
+        <div class="table-scroll">
+          <table id="calibTable">
+            <thead>
+              <tr>
+                <th>cm</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th>
+              </tr>
+            </thead>
+            <tbody id="calibBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== History Panel ===== -->
+    <section id="panel-history" class="panel">
+      <div class="card">
+        <div class="table-toolbar">
+          <p class="hint">Saved readings with date &amp; time.</p>
+          <button id="clearHistoryBtn" class="ghost-btn text-btn">Clear All</button>
+        </div>
+        <div id="historyEmpty" class="empty-state">No saved readings yet. Calculate a dip and tap “Save to History”.</div>
+        <ul id="historyList" class="history-list"></ul>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="installBar" class="install-bar hidden">
+    <span>Install KHAN PUMP Calculator on this device for offline use.</span>
+    <button id="installBtn" class="primary-btn small">Install</button>
+    <button id="installDismiss" class="ghost-btn">✕</button>
+  </div>
+
+  <footer class="dev-footer">
+    <div class="dev-card">
+      <div class="dev-brand">
+        <span class="dev-drop">💧</span>
+        <h2>DIGITAL <span>DIP</span> SOLUTIONS</h2>
+      </div>
+      <p class="dev-sub">Developed by Waqar Ali Punjab &nbsp;•&nbsp; App v1.3</p>
+      <hr class="dev-rule">
+      <a class="dev-line" href="mailto:Waqarali.punjab@gmail.com">
+        <span class="dev-ico">✉️</span> Waqarali.punjab@gmail.com
+      </a>
+      <a class="dev-line" href="https://wa.me/923009630013" target="_blank" rel="noopener">
+        <span class="dev-ico">📞</span> +92-300-9630013
+      </a>
+    </div>
+    <p class="app-copyright">KHAN PUMP &copy; <span id="year"></span> — Fuel Tank Dip Calculator</p>
+  </footer>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
