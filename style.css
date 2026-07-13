@@ -89,6 +89,20 @@ html[data-theme="dark"] .brand-text h1{ color: #fff; }
 html[data-theme="dark"] .icon-btn .i-sun{ display:none; }
 html[data-theme="dark"] .icon-btn .i-moon{ display:block; }
 
+/* ===== Install App banner button ===== */
+.install-banner{
+  width: 100%;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  background: var(--amber); color: var(--navy);
+  border: none; border-radius: 12px;
+  padding: 13px; margin-bottom: 16px;
+  font-weight: 800; font-size: 14.5px; letter-spacing:.02em;
+  cursor: pointer; box-shadow: var(--shadow);
+  transition: transform .12s ease;
+}
+.install-banner:active{ transform: scale(.98); }
+.install-banner-ico{ font-size: 17px; }
+
 /* ===== Tabs ===== */
 .tabs{
   display:flex; gap:6px; background: var(--surface-2);

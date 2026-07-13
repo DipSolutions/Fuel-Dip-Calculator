@@ -213,22 +213,55 @@ let deferredPrompt;
 const installBar = document.getElementById('installBar');
 const installBtn = document.getElementById('installBtn');
 const installDismiss = document.getElementById('installDismiss');
+const installBannerBtn = document.getElementById('installBannerBtn');
+
+const isStandalone = () =>
+  window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+function showInstallOptions() {
+  if (isStandalone()) return; // already installed, keep everything hidden
+  installBannerBtn.classList.remove('hidden');
+  if (!localStorage.getItem('khanpump_install_dismissed')) {
+    installBar.classList.remove('hidden');
+  }
+}
 
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  if (!localStorage.getItem('khanpump_install_dismissed')) {
-    installBar.classList.remove('hidden');
-  }
+  showInstallOptions();
 });
 
-installBtn?.addEventListener('click', async () => {
+window.addEventListener('appinstalled', () => {
+  installBannerBtn.classList.add('hidden');
   installBar.classList.add('hidden');
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  await deferredPrompt.userChoice;
   deferredPrompt = null;
 });
+
+// iOS Safari never fires beforeinstallprompt — show the banner with manual instructions instead.
+if (isIOS() && !isStandalone()) {
+  installBannerBtn.classList.remove('hidden');
+}
+
+async function triggerInstall() {
+  if (deferredPrompt) {
+    installBar.classList.add('hidden');
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    return;
+  }
+  if (isIOS()) {
+    alert('Install KHAN PUMP app:\n\n1. Tap the Share icon (⬆️) in Safari\n2. Choose "Add to Home Screen"\n3. Tap "Add"');
+    return;
+  }
+  alert('To install: open your browser menu (⋮) and choose "Install app" or "Add to Home screen".');
+}
+
+installBtn?.addEventListener('click', triggerInstall);
+installBannerBtn?.addEventListener('click', triggerInstall);
 
 installDismiss?.addEventListener('click', () => {
   installBar.classList.add('hidden');
